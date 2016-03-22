@@ -1,17 +1,18 @@
 'use strict';
 
 let AWS = require('aws-sdk');
-AWS.config.loadFromPath('./config.json');
+AWS.config.loadFromPath('./config/config.json');
+
+const s3 = new AWS.S3();
 
 // container which we will work
 const container = 'contenedor7';
 
 
-module.exports = function(app) {
+const AWSRoutes =  {
 	
 	// get list all objects in container
-	const getAllObjects = function(req, res) {
-		let s3 = new AWS.S3();
+	getAllObjects: function(req, res) {
 		let response = [];
 
 		// lista todos los objectos de un bucket
@@ -28,11 +29,10 @@ module.exports = function(app) {
 			}
 			res.send(response);
 		})
-	};
+	},
 
 	// get object with name in params
-	const getObjectByKey = function(req, res) {
-		let s3 = new AWS.S3();
+	getObjectByKey: function(req, res) {
 
 		// devuelve el contenido del archivo Key que esta contenido en un Bucket
 		s3.getObject({Bucket: container, Key: req.params.key}, function(err, data) {
@@ -43,9 +43,8 @@ module.exports = function(app) {
 				res.send({key: req.params.key, body:data.Body.toString()});
 			}
 		});
-	};
+	}
 
-	// API Routes
-	app.get('/getAll', getAllObjects);
-	app.get('/getObjectByKey/:key', getObjectByKey);
 }
+
+module.exports=AWSRoutes;
