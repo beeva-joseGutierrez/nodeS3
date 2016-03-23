@@ -26,7 +26,12 @@ module.exports = function(app) {
             callbackURL: "http://localhost:5000/auth/google/callback"
         },
         function (accessToken, refreshToken, profile, done) {
-            done(null, accessToken);
+            //done(null, accessToken);
+            process.nextTick(function() {
+                //console.log('accessToken: '+accessToken);
+                //console.log('profile: '+profile);
+                return done(null, profile);
+            });
         }
     ));
 

@@ -18,25 +18,16 @@ app.use(function(req, res, next) {
 });
 
 const auth = require('./auth');
-
-app.post('/auth', auth.check, auth.validate);
-//TODO app.use
+require('./passport')(app); //Initialize and define the strategy
+require('./login')(app);
 
 app.get('/', function(req, res) {
 	res.send('It works!')
 });
 
-
-require('./passport')(app); //Initialize and define the strategy
-require('./login')(app);
-
-
 const AWSRoutes = require('./routes'); //Operations in AWS
-app.post('/object', auth.check, AWSRoutes.getAllObjects);
-app.post('/object/:key', auth.check, AWSRoutes.getObjectByKey);
-
-//TODO Logout
-//TODO Problem with Google Auth
+app.get('/object', auth.check, AWSRoutes.getAllObjects);
+app.get('/object/:key', auth.check, AWSRoutes.getObjectByKey);
 
 
 app.listen(5000, function() {

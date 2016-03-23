@@ -2,6 +2,8 @@
 
 let AWS = require('aws-sdk');
 AWS.config.loadFromPath('./config/config.json');
+//TODO remove mime
+
 
 const s3 = new AWS.S3();
 
@@ -23,8 +25,10 @@ const AWSRoutes =  {
 			else {
 				for (let index in data.Contents) {
 					let content = data.Contents[index];
-					console.log('Content: ', content.Key, ' : ', content.LastModified);
-					response.push({object: content.Key, lastModified: content.LastModified});
+					let url = s3.getSignedUrl('getObject', {Bucket: container, Key: content.Key});
+
+					//Devuelve una lista de los objetos, con la fecha de su última modificación y su url
+					response.push({object: content.Key, lastModified: content.LastModified, url: url});
 				}
 			}
 			res.send(response);
@@ -40,7 +44,9 @@ const AWSRoutes =  {
 				console.log('Error: '+err);
 			}
 			else {
-				res.send({key: req.params.key, body:data.Body.toString()});
+				let url = s3.getSignedUrl('getObject', {Bucket: container, Key: req.params.key});
+				//res.send({key: req.params.key, url: url, body:data.Body.toString()});
+				res.send(url);
 			}
 		});
 	}
